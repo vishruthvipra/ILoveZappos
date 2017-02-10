@@ -8,16 +8,18 @@ import android.net.NetworkInfo;
  * Created by vishruthkrishnaprasad on 31/1/17.
  */
 
+// This class is used to learn if the user has internet access
+
 public class ConnectionDetector {
 
-    private Context _context;
+    private Context context;
 
     ConnectionDetector(Context context){
-        this._context = context;
+        this.context = context;
     }
 
     public boolean isConnectingToInternet(){
-        ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
             if (info != null) {

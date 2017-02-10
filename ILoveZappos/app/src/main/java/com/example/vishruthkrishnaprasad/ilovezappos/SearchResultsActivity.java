@@ -39,6 +39,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 */
 
+/*
+ When the green button consisting of a check mark is clicked, the user has successfully added the product
+ in the cart and can remove the product from the cart by clicking on it again when the red button
+ with the cross mark appears
+ */
 public class SearchResultsActivity extends AppCompatActivity {
 
     SearchResultsBinding searchResultsBinding;
@@ -88,6 +93,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                 // disable add to cart button
                 searchResultsBinding.fabCheck.setClickable(false);
 
+                // An alert dialog alerts the user appropriately
+                // when the user click on the FloatingActionButton
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -198,7 +205,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         // A dialog box for the user to know that data is being fetched from the remote database.
         pdLoading = new ProgressDialog(SearchResultsActivity.this);
         pdLoading.setTitle("Loading");
-        pdLoading.setMessage("Loading data from your query...");
+        pdLoading.setMessage("Loading data for your query...");
         pdLoading.setCancelable(false);
         pdLoading.show();
 
@@ -217,6 +224,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                     resultList = response.body().getResults();
                     result = new Result();
 
+                    // When no results were found
                     if(resultList.size() == 0) {
                         Toast.makeText(SearchResultsActivity.this, "No product found", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(SearchResultsActivity.this, MainActivity.class);

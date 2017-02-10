@@ -22,8 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".SearchResultsActivity"></activity>
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboard|screenLayout">
+        </activity>
+        <activity android:name=".SearchResultsActivity"
+            android:configChanges="orientation|screenSize|keyboard|screenLayout">
+        </activity>
     </application>
 
 </manifest>

@@ -17,6 +17,9 @@ import com.example.vishruthkrishnaprasad.ilovezappos.databinding.SplashBinding;
  * Created by vishruthkrishnaprasad on 31/1/17.
  */
 
+/* The is the welcome screen of the application
+  It checks if the user is connected to the internet and informs the user if the device is not connected to internet*/
+
 public class SplashScreen extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     Boolean isInternetPresent = false;
@@ -32,6 +35,8 @@ public class SplashScreen extends Activity implements ActivityCompat.OnRequestPe
 
         cd = new ConnectionDetector(getApplicationContext());
         isInternetPresent = cd.isConnectingToInternet();
+
+        // After 2000 ms the MainActivity is started
         int SPLASH_DISPLAY_LENGTH = 2000;
 
         new Handler().postDelayed(new Runnable() {

@@ -16,6 +16,10 @@ import com.example.vishruthkrishnaprasad.ilovezappos.databinding.ActivityMainBin
 /**
  * Created by vishruthkrishnaprasad on 31/1/17.
  */
+
+// This is where the user enters a query in the search bar located on the toolbar
+
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding activityMainBinding;
@@ -28,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        // A custom styled toolbar is added at the top of the screen
         setSupportActionBar(activityMainBinding.toolbar);
 
         // No item searched to add to the cart
