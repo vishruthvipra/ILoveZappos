@@ -24,6 +24,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <android.support.v7.widget.Toolbar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/action_bar"
+                    android:theme="?attr/actionBarTheme"
+                    android:minHeight="?attr/actionBarSize"
+                    android:id="@+id/toolbar" />
+
                 <ImageView
                     android:layout_width="200dp"
                     android:layout_height="200dp"
@@ -60,6 +68,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
+                            android:textAllCaps="true"
                             android:textColor="#000000"
                             android:text="@{result.brandName}"
                             android:textSize="24sp" />
@@ -224,15 +233,6 @@
                 </TableLayout>
             </LinearLayout>
         </ScrollView>
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_plus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/ic_input_add"
-            android:tint="@android:color/white"
-            app:pressedTranslationZ="12dp"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_check"
@@ -245,6 +245,17 @@
             app:backgroundTint="#43a047"
             app:pressedTranslationZ="12dp"
             tools:ignore="VectorDrawableCompat" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_cross"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:backgroundTint="#F44336"
+            app:srcCompat="@android:drawable/ic_delete"
+            android:tint="@android:color/white"
+            app:pressedTranslationZ="12dp"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

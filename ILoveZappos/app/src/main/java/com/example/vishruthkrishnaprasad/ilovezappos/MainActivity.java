@@ -49,10 +49,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                sharedPreferences.edit().putString("query", query).commit();
+                sharedPreferences.edit().putString("query", query).apply();
 
                 Intent intent = new Intent(MainActivity.this, SearchResultsActivity.class);
                 startActivity(intent);
+                finish();
                 if (!searchView.isIconified()) {
                     searchView.setIconified(true);
                 }

@@ -1,9 +1,12 @@
 package com.example.vishruthkrishnaprasad.ilovezappos;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -35,6 +38,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 */
+
 public class SearchResultsActivity extends AppCompatActivity {
 
     SearchResultsBinding searchResultsBinding;
@@ -45,12 +49,15 @@ public class SearchResultsActivity extends AppCompatActivity {
     ProgressDialog pdLoading;
     Result result;
     Animation fabAddCart, fabCancel, fabFlubbergrow, fabFlubbershrink;
+
+    // in case the query does not fetch results
     String query = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         searchResultsBinding = DataBindingUtil.setContentView(this, R.layout.activity_search_results);
+        setSupportActionBar(searchResultsBinding.toolbar);
 
         fabAddCart = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_add_cart);
         fabCancel = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_cancel);
@@ -58,49 +65,70 @@ public class SearchResultsActivity extends AppCompatActivity {
         fabFlubbershrink = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_adjust);
 
         // when user has not added item to the cart, hide the added to cart button
-        searchResultsBinding.fabCheck.hide();
+        searchResultsBinding.fabCross.hide();
         // disable added to cart button
-        searchResultsBinding.fabCheck.setClickable(false);
+        searchResultsBinding.fabCross.setClickable(false);
 
-        searchResultsBinding.fabPlus.setOnClickListener(new View.OnClickListener() {
+        searchResultsBinding.fabCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /* NOTE: adding item to cart is just a visual effect and has no database updates
                          in this app*/
+
                 // unhide added to cart button and make it clickable
-                searchResultsBinding.fabCheck.show();
-                searchResultsBinding.fabCheck.setClickable(true);
+                searchResultsBinding.fabCross.show();
+                searchResultsBinding.fabCross.setClickable(true);
 
                 // respective animations
-                searchResultsBinding.fabCheck.startAnimation(fabFlubbergrow);
-                searchResultsBinding.fabCheck.startAnimation(fabFlubbershrink);
-
-                Toast.makeText(SearchResultsActivity.this,
-                        "Added to Cart! Click again to remove",
-                        Toast.LENGTH_SHORT).show();
+                searchResultsBinding.fabCross.startAnimation(fabFlubbergrow);
+                searchResultsBinding.fabCross.startAnimation(fabFlubbershrink);
 
                 // when user has added the item into the cart, hide the add to cart button
-                searchResultsBinding.fabPlus.hide();
+                searchResultsBinding.fabCheck.hide();
                 // disable add to cart button
-                searchResultsBinding.fabPlus.setClickable(false);
+                searchResultsBinding.fabCheck.setClickable(false);
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Wait for 800 ms for the user to observe the cart animation
+                        AlertDialog.Builder alert = new AlertDialog.Builder(SearchResultsActivity.this, R.style.MyDialogTheme);
+                        alert.setTitle(R.string.add_str);
+                        alert.setMessage("Click again to remove");
+                        alert.setPositiveButton("OK", null);
+                        alert.show();
+                    }
+                }, 800);
+
             }
         });
 
         // events that occur in fabPlus are reversed
-        searchResultsBinding.fabCheck.setOnClickListener(new View.OnClickListener() {
+        searchResultsBinding.fabCross.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                searchResultsBinding.fabPlus.show();
-                searchResultsBinding.fabPlus.setClickable(true);
-                searchResultsBinding.fabPlus.startAnimation(fabFlubbergrow);
-                searchResultsBinding.fabPlus.startAnimation(fabFlubbershrink);
+                searchResultsBinding.fabCheck.show();
+                searchResultsBinding.fabCheck.setClickable(true);
+                searchResultsBinding.fabCheck.startAnimation(fabFlubbergrow);
+                searchResultsBinding.fabCheck.startAnimation(fabFlubbershrink);
 
-                Toast.makeText(SearchResultsActivity.this,
-                        "Removed from Cart... Click again to add",
-                        Toast.LENGTH_SHORT).show();
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Wait for 800 ms for the user to observe the cart animation
+                        AlertDialog.Builder alert = new AlertDialog.Builder(SearchResultsActivity.this, R.style.MyDialogTheme);
+                        alert.setTitle(R.string.remove_str);
+                        alert.setMessage("Click again to add");
+                        alert.setPositiveButton("OK", null);
+                        alert.show();
+                    }
+                }, 800);
 
-                searchResultsBinding.fabCheck.hide();
-                searchResultsBinding.fabCheck.setClickable(false);
+
+                searchResultsBinding.fabCross.hide();
+                searchResultsBinding.fabCross.setClickable(false);
             }
         });
 
@@ -118,6 +146,11 @@ public class SearchResultsActivity extends AppCompatActivity {
         // (2)
         // new BackgroundTask(query).execute();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
     }
 
     @Override
@@ -165,7 +198,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         // A dialog box for the user to know that data is being fetched from the remote database.
         pdLoading = new ProgressDialog(SearchResultsActivity.this);
         pdLoading.setTitle("Loading");
-        pdLoading.setMessage("Loading data from URL...");
+        pdLoading.setMessage("Loading data from your query...");
         pdLoading.setCancelable(false);
         pdLoading.show();
 
@@ -184,25 +217,35 @@ public class SearchResultsActivity extends AppCompatActivity {
                     resultList = response.body().getResults();
                     result = new Result();
 
-                    // get all the credentials one by one
-                    result.setBrandName(resultList.get(0).getBrandName());
-                    result.setThumbnailImageUrl(resultList.get(0).getThumbnailImageUrl());
-                    result.setProductId(resultList.get(0).getProductId());
-                    result.setOriginalPrice(resultList.get(0).getOriginalPrice());
-                    result.setStyleId(resultList.get(0).getStyleId());
-                    result.setColorId(resultList.get(0).getColorId());
-                    result.setPrice(resultList.get(0).getPrice());
-                    result.setPercentOff(resultList.get(0).getPercentOff());
-                    result.setProductUrl(resultList.get(0).getProductUrl());
-                    result.setProductName(resultList.get(0).getProductName());
+                    if(resultList.size() == 0) {
+                        Toast.makeText(SearchResultsActivity.this, "No product found", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(SearchResultsActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                    }
+
+                    else {
+                        // get all the credentials one by one
+                        result.setBrandName(resultList.get(0).getBrandName());
+                        result.setThumbnailImageUrl(resultList.get(0).getThumbnailImageUrl());
+                        result.setProductId(resultList.get(0).getProductId());
+                        result.setOriginalPrice(resultList.get(0).getOriginalPrice());
+                        result.setStyleId(resultList.get(0).getStyleId());
+                        result.setColorId(resultList.get(0).getColorId());
+                        result.setPrice(resultList.get(0).getPrice());
+                        result.setPercentOff(resultList.get(0).getPercentOff());
+                        result.setProductUrl(resultList.get(0).getProductUrl());
+                        result.setProductName(resultList.get(0).getProductName());
+
+                        Picasso.with(SearchResultsActivity.this)
+                                .load(result.getThumbnailImageUrl())
+                                .into(searchResultsBinding.imageView);
+                        searchResultsBinding.setResult(result);
+                    }
 
                     // add to the array list and then populate the recycler view
                     resultOfProducts.add(result);
-
-                    Picasso.with(SearchResultsActivity.this)
-                            .load(result.getThumbnailImageUrl())
-                            .into(searchResultsBinding.imageView);
-                    searchResultsBinding.setResult(result);
 
                     // dismiss the dialog
                     pdLoading.dismiss();
@@ -211,13 +254,10 @@ public class SearchResultsActivity extends AppCompatActivity {
                     editor = sharedPreferences.edit();
                     editor.putString("query", searchQuery);
                     editor.commit();
-
-
                 } catch (Exception e) {
                     Log.e("onResponse", "There is an error" + e);
                     e.printStackTrace();
                 }
-
             }
 
             @Override
